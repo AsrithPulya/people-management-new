@@ -1,0 +1,68 @@
+/* Styles for the Team On Leave page */
+.team-on-leave-page {
+    display: flex;
+  }
+  
+  .main-content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #f5f8fa; /* Light background color */
+  }
+  
+  /* Top Navigation Bar styling */
+  .top-nav {
+    display: flex;
+    padding: 10px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .nav-links {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .nav-link {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+  }
+  
+  .nav-link.active {
+    color: #007bff; /* Active color for the Team link */
+  }
+  
+  /* Sub Navigation Bar for Team */
+  .sub-nav {
+    display: flex;
+    padding: 10px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .sub-nav-link {
+    padding: 10px;
+    margin-right: 15px;
+    text-decoration: none;
+    color: #333;
+  }
+  
+  .sub-nav-link.active {
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+  }
+  
+  /* Content for the "On Leave" page */
+  .on-leave-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh; /* Centers content vertically */
+  }
+  
+  .no-leave-message p {
+    font-size: 18px;
+    color: #333;
+    text-align: center;
+    font-weight: 500;
+  }
+  

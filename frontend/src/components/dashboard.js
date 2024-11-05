@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import NewHire from './NewHire';
 import '../dashboard.css';
 
 function Dashboard() {
+  const [isModalOpen, setIsModalOpen] = useState(false); 
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="dashboard">
       <Sidebar />
@@ -23,8 +34,12 @@ function Dashboard() {
 
         <div className="content">
           <h1>Welcome to the Dashboard</h1>
+          <button className="add-employee-btn" onClick={openModal}>Add Employee</button>
         </div>
       </div>
+
+      {/* Register User Modal */}
+      <NewHire isOpen={isModalOpen} onClose={closeModal} />
     </div>
   );
 }

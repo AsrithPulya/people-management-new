@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Dashboard from './components/dashboard';
+import Login from './components/Login'; 
 import LeaveTracker from './components/LeaveTracker';
 import ApplyLeaveModal from './components/ApplyLeave';
 import LeaveBalance from './components/LeaveBalance';
@@ -14,11 +15,14 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
+          {/* Login Route */}
+          <Route path="/" element={<Login />} />
+          
           {/* Main Dashboard Route */}
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/leave-tracker" element={<LeaveTracker />} />
           <Route path="/leave-tracker/summary" element={<LeaveTracker />} />
-          <Route path="/leave-tracker/Apply-Leave" element={<ApplyLeaveModal />} />
+          <Route path="/leave-tracker/apply-leave" element={<ApplyLeaveModal />} />
           <Route path="/leave-tracker/balance" element={<LeaveBalance />} />
           <Route path="/leave-tracker/requests" element={<LeaveRequests />} />
           <Route path="/team" element={<TeamReportees />} />

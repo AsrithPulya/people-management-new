@@ -2,7 +2,7 @@
 
 from django.urls import path
 from .views import LeaveTypeCreateView, LeaveTypeListView, LeaveTypeUpdateView, LeaveTypeDeleteView, LeavePolicyCreateView, LeavePolicyListView, LeavePolicyUpdateView, LeavePolicyDeleteView, EmployeeLeaveBalanceView, AdminLeaveBalancesView, ApplyForLeaveView, EmployeeLeaveRequestsView, AdminLeaveRequestsView, ViewLeaveRequestView, UpdateLeaveRequestStatusView
-from .views import CompanyListCreateAPIView, CreateEmployeeView
+from .views import CompanyListCreateAPIView, CreateEmployeeView, ApproveRejectLeaveRequest
 
 urlpatterns = [
     path('companies/', CompanyListCreateAPIView.as_view(), name='company_list_create'),
@@ -31,5 +31,6 @@ urlpatterns = [
     path('admin/leave-requests/', AdminLeaveRequestsView.as_view(), name='admin_leave_requests'),
     path('leave-requests/<int:pk>/', ViewLeaveRequestView.as_view(), name='view_leave_request'),
     path('leave-requests/<int:pk>/update-status/', UpdateLeaveRequestStatusView.as_view(), name='update_leave_request_status'),
+    path('leave-requests/<int:leave_id>/approve-reject/', ApproveRejectLeaveRequest.as_view(), name='approve_reject_leave_request'),
 ]
 

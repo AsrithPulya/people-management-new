@@ -32,3 +32,9 @@ class EmployeeLeaveRequestSerializer(serializers.ModelSerializer):
         model = EmployeeLeavesRequests
         fields = ['id', 'employee', 'leave_type', 'start_date', 'end_date', 'leave_day_type', 'reporting_manager_email', 'reason_for_leave', 'status_of_leave']
 
+    def create(self, validated_data):
+        employee = validated_data.get('employee')
+        # Fetch reporting manager's email from the employee's user data
+        if employee.user.reporting_manager:
+            validated_data['reporting_manager_email'] = employee.user.reporting_manager.email
+        return super().create(validated_data)

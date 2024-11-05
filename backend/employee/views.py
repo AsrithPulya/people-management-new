@@ -6,6 +6,7 @@ from django.contrib import messages
 from datetime import date
 from .models import LeaveTypeIndex, Company, LeavePolicy, LeavePolicyTypes, EmployeeLeavesRequests, Employee
 from .serializers import LeaveTypeIndexSerializer, LeavePolicySerializer, LeavePolicyTypesSerializer, EmployeeLeaveRequestSerializer, CompanyMainSerializer, EmployeeSerializer
+from rest_framework.permissions import IsAuthenticated
 
 #Adding a Company
 class CompanyListCreateAPIView(APIView):
@@ -241,3 +242,25 @@ class UpdateLeaveRequestStatusView(APIView):
         leave_request.status_of_leave = new_status
         leave_request.save()
         return Response({'message': 'Leave request status updated successfully.'}, status=status.HTTP_200_OK)
+
+class ApproveRejectLeaveRequest(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, leave_id):
+        action = request.data.get("action")
+        leave_request = EmployeeLeavesRequests.objects.get(id=leave_id)
+
+        # Check if the logged-in user is the reporting manager
+        if request.user.email != leave_request.reporting_manager_email:
+            return Response({"error": "You are not authorized to approve or reject this leave request."}, status=status.HTTP_403_FORBIDDEN)
+
+        # Update the status of the leave request
+        if action == "approve":
+            leave_request.status_of_leave = "Approved"
+        elif action == "reject":
+            leave_request.status_of_leave = "Rejected"
+        else:
+            return Response({"error": "Invalid action"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        leave_request.save()
+        return Response({"message": f"Leave request {action}d successfully."}, status=status.HTTP_200_OK)

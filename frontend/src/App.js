@@ -10,6 +10,7 @@ import TeamReportees from './components/TeamReportees';
 import TeamOnLeave from './components/TeamOnLeave';
 import TeamLeaveRequests from './components/TeamLeaveRequests';
 
+
 function App() {
   return (
     <Router>
@@ -26,6 +27,7 @@ function App() {
           <Route path="/leave-tracker/balance" element={<LeaveBalance />} />
           <Route path="/leave-tracker/requests" element={<LeaveRequests />} />
           <Route path="/team" element={<TeamReportees />} />
+          <Route path="/team/reportees" element={<TeamReportees />} />
           <Route path="/team/on-leave" element={<TeamOnLeave />} />
           <Route path="/team/leave-requests" element={<TeamLeaveRequests />} />
         </Routes>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; 
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import '../Login.css';
 
@@ -7,27 +7,35 @@ function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
+  
     try {
       const response = await axios.post('http://localhost:8000/accounts/login/', {
         username,
         password,
       });
-
-      if (response.status === 200) {
-        console.log(response.data);
-        navigate('/dashboard'); 
+  
+      // Log the response to check if it contains the token
+      console.log("Login response:", response.data);
+  
+      const access_token = response.data.access_token; // Adjust if your token key is different, like `token`
+      
+      if (access_token) {
+        localStorage.setItem('accessToken', access_token);
+        navigate('/dashboard');
+      } else {
+        setError('Failed to retrieve token. Please check backend response.');
       }
     } catch (err) {
       setError('Invalid username or password'); 
       console.error(err);
     }
   };
+  
 
   return (
     <div className="login-container">

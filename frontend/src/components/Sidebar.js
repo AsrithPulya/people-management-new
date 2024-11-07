@@ -6,11 +6,14 @@ import { Link } from 'react-router-dom';
 function Sidebar() {
   return (
     <div className="sidebar">
-      <Link to="/" className="sidebar-item">
-        <i className="icon-home"></i> Home
+      <Link to="/dashboard" className="sidebar-item">
+         Home
       </Link>
       <Link to="/leave-tracker" className="sidebar-item">
-        <i className="icon-leave"></i> Leave Tracker
+         Leave Tracker
+      </Link>
+      <Link to="/" className="sidebar-item">
+         Logout
       </Link>
     </div>
   );

@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from datetime import date
 from .models import LeaveTypeIndex, Company, LeavePolicy, LeavePolicyTypes, EmployeeLeavesRequests, Employee
-from .serializers import LeaveTypeIndexSerializer, LeavePolicySerializer, LeavePolicyTypesSerializer, EmployeeLeaveRequestSerializer, CompanyMainSerializer, EmployeeSerializer
+from .serializers import LeaveTypeIndexSerializer, LeavePolicySerializer, LeavePolicyTypesSerializer, EmployeeLeaveRequestSerializer, CompanyMainSerializer, EmployeeSerializer, EmployeeLeavesRequests
 from rest_framework.permissions import IsAuthenticated
 
 #Adding a Company
@@ -35,6 +35,20 @@ class CreateEmployeeView(APIView):
         
         # Return validation errors if the data is invalid
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class EmployeeListView(APIView):
+    def get(self, request):
+        employees = Employee.objects.all()
+        serializer = EmployeeSerializer(employees, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class CurrentEmployeeView(APIView):
+    permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access this view
+    def get(self, request):
+        # Fetch the employee associated with the current authenticated user
+        employee = Employee.objects.get(user=request.user)  
+        serializer = EmployeeSerializer(employee)
+        return Response(serializer.data)
     
 # LEAVE TYPE MANAGEMENT
 # Creating a Leave type
@@ -195,21 +209,26 @@ class AdminLeaveBalancesView(APIView):
 
 # LEAVE REQUEST VIEWS
 from rest_framework.exceptions import NotFound
-
 class ApplyForLeaveView(APIView):
     def post(self, request):
         try:
             employee = request.user.employee  
-            print("Employee instance:", employee) 
+            print("Employee instance:", employee)
         except Employee.DoesNotExist:
             raise NotFound("The user does not have an associated Employee profile.")
         
+        if not request.user.reporting_manager:
+            return Response({'error': 'Employee does not have an assigned reporting manager.'}, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = EmployeeLeaveRequestSerializer(data=request.data)
         
+        # Validate the serializer data
         if serializer.is_valid():
-            serializer.save(employee=employee, status_of_leave='Pending')
+            # Save the leave request with the employee and default status of "Pending"
+            serializer.save(employee=employee, reporting_manager=request.user.reporting_manager, status_of_leave='Pending')
             return Response({'message': 'Leave request submitted successfully.'}, status=status.HTTP_201_CREATED)
         
+        # If the serializer is invalid, return the errors
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -219,6 +238,17 @@ class EmployeeLeaveRequestsView(APIView):
         leave_requests = EmployeeLeavesRequests.objects.filter(employee=request.user.employee)
         serializer = EmployeeLeaveRequestSerializer(leave_requests, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class ReporteesLeaveRequestsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # Get the logged-in user's reportees' leave requests
+        reportees = request.user.reportees.all()  # Get the reportees of the logged-in user
+        leave_requests = EmployeeLeavesRequests.objects.filter(employee__user__in=reportees)
+
+        serializer = EmployeeLeaveRequestSerializer(leave_requests, many=True)
+        return Response(serializer.data)
 
 # View for Admin to see the leaves of employees specifically
 class AdminLeaveRequestsView(APIView):
@@ -248,10 +278,17 @@ class ApproveRejectLeaveRequest(APIView):
 
     def post(self, request, leave_id):
         action = request.data.get("action")
-        leave_request = EmployeeLeavesRequests.objects.get(id=leave_id)
+        try:
+            leave_request = EmployeeLeavesRequests.objects.get(id=leave_id)
+        except EmployeeLeavesRequests.DoesNotExist:
+            return Response({"error": "Leave request not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Debugging
+        print(f"Request user ID: {request.user.id if request.user else 'None'}")
+        print(f"Leave request reporting manager ID: {leave_request.reporting_manager.id if leave_request.reporting_manager else 'None'}")
 
         # Check if the logged-in user is the reporting manager
-        if request.user.email != leave_request.reporting_manager_email:
+        if request.user.id != leave_request.reporting_manager.id:
             return Response({"error": "You are not authorized to approve or reject this leave request."}, status=status.HTTP_403_FORBIDDEN)
 
         # Update the status of the leave request
@@ -261,6 +298,16 @@ class ApproveRejectLeaveRequest(APIView):
             leave_request.status_of_leave = "Rejected"
         else:
             return Response({"error": "Invalid action"}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         leave_request.save()
         return Response({"message": f"Leave request {action}d successfully."}, status=status.HTTP_200_OK)
+
+class ReporteesListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        reporting_manager = request.user
+        reportees = Employee.objects.filter(user__reporting_manager=reporting_manager)
+        serializer = EmployeeSerializer(reportees, many=True)
+        return Response(serializer.data)
+

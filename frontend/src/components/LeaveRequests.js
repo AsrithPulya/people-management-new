@@ -1,6 +1,6 @@
 import React from 'react';
-import Sidebar from './Sidebar'; // Import Sidebar component
-import '../LeaveTracker.css'; // Ensure styles are applied
+import Sidebar from './Sidebar'; 
+import '../LeaveTracker.css'; 
 import { Link } from 'react-router-dom';
 
 function LeaveRequests() {
@@ -14,7 +14,7 @@ function LeaveRequests() {
         {/* Top Navigation Bar */}
         <div className="top-nav">
           <div className="nav-links">
-            <Link to="/mydata" className="nav-link">MyData</Link>
+            <Link to="/leave-ckertra" className="nav-link active">MyData</Link>
             <Link to="/team" className="nav-link">Team</Link>
           </div>
         </div>
@@ -28,7 +28,7 @@ function LeaveRequests() {
 
         {/* Leave Requests Content */}
         <h2>Leave Requests</h2>
-        <button className="add-request-btn">Add Leave Request</button>
+        <button className="apply-leave-btn">Add Leave Request</button>
         
         <table className="leave-requests-table">
           <thead>

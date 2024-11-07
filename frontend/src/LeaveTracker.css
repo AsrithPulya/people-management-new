@@ -136,6 +136,8 @@
   border-radius: 5px; 
   cursor: pointer;
   transition: background-color 0.3s ease; 
+  height: 7%;
+  width: 13%;
 }
 
 .apply-leave-btn:hover {

@@ -14,7 +14,7 @@ function LeaveBalance() {
         {/* Top Navigation Bar */}
         <div className="top-nav">
           <div className="nav-links">
-            <Link to="/mydata" className="nav-link">MyData</Link>
+            <Link to="/leave-tracker" className="nav-link active">MyData</Link>
             <Link to="/team" className="nav-link">Team</Link>
           </div>
         </div>

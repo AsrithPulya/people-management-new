@@ -1,20 +1,72 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import '../TeamReportees.css';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const TeamReportees = () => {
   const [filter, setFilter] = useState('all');
   const [view, setView] = useState('grid');
+  const [reportees, setReportees] = useState([]); // State for storing reportees data
+  const [loading, setLoading] = useState(true); // State for loading indicator
 
-  const reportees = [
-    { id: 'HRM19', name: 'Nirav Butani', leaveStatus: 'Leave', leaveBooked: 25.0, checkInStatus: '', schedule: '9:00 AM - 6:00 PM' },
-    { id: 'HRM3', name: 'Kunal Kashyap', leaveStatus: 'Leave', leaveBooked: 25.5, checkInStatus: '', schedule: '9:00 AM - 6:00 PM' },
-  ];
+  // Fetch leave requests dynamically (assuming you have an API endpoint for it)
+  useEffect(() => {
+    const fetchReportees = async () => {
+      try {
+        const token = localStorage.getItem('accessToken'); // Retrieve token from localStorage
 
+        if (!token) {
+          alert('You are not authorized. Please log in again.');
+          return;
+        }
+
+        const response = await axios.get('http://127.0.0.1:8000/api/reportees/leave-requests/', {
+          headers: { Authorization: `Bearer ${token}` }, // Add token to the headers
+        });
+
+        setReportees(response.data); // Update the reportees state
+        setLoading(false); // Set loading to false after data is fetched
+      } catch (error) {
+        console.error('Error fetching leave requests:', error);
+        setLoading(false); // Set loading to false if an error occurs
+      }
+    };
+
+    fetchReportees();
+  }, []); 
+
+  // Filter logic based on status or leave status
   const filteredReportees = reportees.filter(reportee => {
-    return filter === 'all' || (filter === 'direct' && reportee.checkInStatus === 'Yet to check-in');
+    return filter === 'all' || 
+           (filter === 'direct' && reportee.checkInStatus === 'Yet to check-in');
   });
+
+  // Approve or Reject leave request
+  const handleApproveReject = async (leaveId, action) => {
+    const token = localStorage.getItem('accessToken'); // Retrieve token from localStorage
+
+    if (!token) {
+      alert('You are not authorized. Please log in again.');
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `http://127.0.0.1:8000/api/leave-requests/${leaveId}/approve-reject/`,
+        { action }, // action can be 'approve' or 'reject'
+        {
+          headers: { Authorization: `Bearer ${token}` }, // Add token to the headers
+        }
+      );
+      alert(`Leave request ${action}d successfully!`);
+      // Optionally, update the reportees state to reflect changes
+      setReportees(reportees.filter(reportee => reportee.id !== leaveId)); // Remove approved/rejected request
+    } catch (error) {
+      console.error(`Error ${action}ing leave request:`, error);
+      alert(`Failed to ${action} the leave request.`);
+    }
+  };
 
   return (
     <div className="team-reportees-page">
@@ -26,16 +78,16 @@ const TeamReportees = () => {
         {/* Top Navigation Bar */}
         <div className="top-nav">
           <div className="nav-links">
-            <Link to="/mydata" className="nav-link">My Data</Link>
+            <Link to="/leave-tracker" className="nav-link">My Data</Link>
             <Link to="/team" className="nav-link active">Team</Link>
           </div>
         </div>
 
         {/* Sub Navigation Bar for Team */}
         <div className="sub-nav">
-          <Link to="/team/reportees" className="sub-nav-link active">Reportees</Link>
+          <Link to="/team/reportees" className="sub-nav-link">Reportees</Link>
           <Link to="/team/on-leave" className="sub-nav-link">On Leave</Link>
-          <Link to="/team/leave-requests" className="sub-nav-link">Leave Requests</Link>
+          <Link to="/team/leave-requests" className="sub-nav-link active">Leave Requests</Link>
         </div>
 
         {/* Reportees Header */}
@@ -55,28 +107,56 @@ const TeamReportees = () => {
               All {reportees.length}
             </button>
             <div className="view-toggle">
-              <button onClick={() => setView('grid')} className={`toggle-btn ${view === 'grid' ? 'active' : ''}`}>Grid</button>
-              <button onClick={() => setView('list')} className={`toggle-btn ${view === 'list' ? 'active' : ''}`}>List</button>
+              <button 
+                onClick={() => setView('grid')} 
+                className={`toggle-btn ${view === 'grid' ? 'active' : ''}`}
+              >
+                Grid
+              </button>
+              <button 
+                onClick={() => setView('list')} 
+                className={`toggle-btn ${view === 'list' ? 'active' : ''}`}
+              >
+                List
+              </button>
             </div>
           </div>
         </div>
 
         {/* Reportees Container */}
         <div className={`reportees-container ${view}`}>
-          {filteredReportees.map((reportee, index) => (
-            <div key={index} className="reportee-card">
-              <div className="profile-pic"></div>
-              <div className="reportee-info">
-                <h4>{reportee.id} - {reportee.name}</h4>
-                <p className="status">
-                  {reportee.leaveStatus || reportee.checkInStatus}
-                </p>
-                <p>{reportee.leaveBooked} Leave booked this year</p>
-                <p>General - {reportee.schedule}</p>
+          {loading ? (
+            <div>Loading...</div> // Show loading state while fetching data
+          ) : (
+            filteredReportees.map((reportee, index) => (
+              <div key={index} className="reportee-card">
+                <div className="reportee-info">
+                  <h4>{reportee.id} {reportee.employee}</h4>
+                  <p>Reason: {reportee.reason_for_leave}</p>
+                  <p className="status">
+                    {reportee.status_of_leave}
+                  </p>
+                  <h5>Leave Dates</h5>
+                  <p>From: {reportee.start_date} To: {reportee.end_date} </p>
+                </div>
+                {/* Approve and Reject buttons */}
+                <div className="actions">
+                  <button 
+                    className="approve-btn" 
+                    onClick={() => handleApproveReject(reportee.id, 'approve')}
+                  >
+                    Approve
+                  </button>
+                  <button 
+                    className="reject-btn" 
+                    onClick={() => handleApproveReject(reportee.id, 'reject')}
+                  >
+                    Reject
+                  </button>
+                </div>
               </div>
-              <button className="contact-btn">&#9742;</button>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>

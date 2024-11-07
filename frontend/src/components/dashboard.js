@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import NewHire from './NewHire';
 import '../dashboard.css';
 
 function Dashboard() {
-  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      navigate('/'); // Redirect to login if no token
+    }
+  }, [navigate]);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -24,7 +32,7 @@ function Dashboard() {
         {/* Top Navigation */}
         <header className="top-nav">
           <nav>
-            <ul className="top-nav-links"> 
+            <ul className="top-nav-links">
               <li><Link to="/myspace">MySpace</Link></li>
               <li><Link to="/team">Team</Link></li>
               <li><Link to="/organization">Organization</Link></li>

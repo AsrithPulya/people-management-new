@@ -14,7 +14,7 @@ const TeamOnLeave = () => {
         {/* Top Navigation Bar */}
         <div className="top-nav">
           <div className="nav-links">
-            <Link to="/mydata" className="nav-link">My Data</Link>
+            <Link to="/leave-tracker" className="nav-link">My Data</Link>
             <Link to="/team" className="nav-link active">Team</Link>
           </div>
         </div>

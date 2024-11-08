@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Dashboard from './components/dashboard';
+import Dashboard from './components/dashboard'
 import Login from './components/Login'; 
 import LeaveTracker from './components/LeaveTracker';
 import ApplyLeaveModal from './components/ApplyLeave';

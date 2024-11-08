@@ -22,7 +22,7 @@ function Login() {
       // Log the response to check if it contains the token
       console.log("Login response:", response.data);
   
-      const access_token = response.data.access_token; // Adjust if your token key is different, like `token`
+      const access_token = response.data.access_token; 
       
       if (access_token) {
         localStorage.setItem('accessToken', access_token);

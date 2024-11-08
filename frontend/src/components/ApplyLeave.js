@@ -99,7 +99,7 @@ function ApplyLeaveModal({ isOpen, onClose }) {
     
     try {
       const token = localStorage.getItem('accessToken');
-      //To handle the scnario where the access token is not present
+      //To handle the scenario where the access token is not present
       if (!token) {
         alert('You are not authorized. Please log in again.');
         onClose();

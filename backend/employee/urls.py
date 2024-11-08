@@ -28,6 +28,7 @@ urlpatterns = [
     path('employee/leave-balance/', EmployeeLeaveBalanceView.as_view(), name='employee_leave_balance'),
     path('admin/leave-balances/', AdminLeaveBalancesView.as_view(), name='admin_leave_balances'),
 
+
     # Leave Request Management
     path('leave-requests/apply/', ApplyForLeaveView.as_view(), name='apply_for_leave'),
     path('leave-requests/', EmployeeLeaveRequestsView.as_view(), name='employee_leave_requests'),

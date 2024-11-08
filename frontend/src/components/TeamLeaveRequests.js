@@ -7,10 +7,10 @@ import axios from 'axios';
 const TeamReportees = () => {
   const [filter, setFilter] = useState('all');
   const [view, setView] = useState('grid');
-  const [reportees, setReportees] = useState([]); // State for storing reportees data
-  const [loading, setLoading] = useState(true); // State for loading indicator
+  const [reportees, setReportees] = useState([]); 
+  const [loading, setLoading] = useState(true); 
 
-  // Fetch leave requests dynamically (assuming you have an API endpoint for it)
+  // Fetch leave requests dynamically 
   useEffect(() => {
     const fetchReportees = async () => {
       try {
@@ -22,21 +22,20 @@ const TeamReportees = () => {
         }
 
         const response = await axios.get('http://127.0.0.1:8000/api/reportees/leave-requests/', {
-          headers: { Authorization: `Bearer ${token}` }, // Add token to the headers
+          headers: { Authorization: `Bearer ${token}` }, 
         });
 
-        setReportees(response.data); // Update the reportees state
-        setLoading(false); // Set loading to false after data is fetched
+        setReportees(response.data); 
+        setLoading(false); 
       } catch (error) {
         console.error('Error fetching leave requests:', error);
-        setLoading(false); // Set loading to false if an error occurs
+        setLoading(false); 
       }
     };
 
     fetchReportees();
   }, []); 
 
-  // Filter logic based on status or leave status
   const filteredReportees = reportees.filter(reportee => {
     return filter === 'all' || 
            (filter === 'direct' && reportee.checkInStatus === 'Yet to check-in');
@@ -56,11 +55,10 @@ const TeamReportees = () => {
         `http://127.0.0.1:8000/api/leave-requests/${leaveId}/approve-reject/`,
         { action }, // action can be 'approve' or 'reject'
         {
-          headers: { Authorization: `Bearer ${token}` }, // Add token to the headers
+          headers: { Authorization: `Bearer ${token}` }, 
         }
       );
       alert(`Leave request ${action}d successfully!`);
-      // Optionally, update the reportees state to reflect changes
       setReportees(reportees.filter(reportee => reportee.id !== leaveId)); // Remove approved/rejected request
     } catch (error) {
       console.error(`Error ${action}ing leave request:`, error);
@@ -126,7 +124,7 @@ const TeamReportees = () => {
         {/* Reportees Container */}
         <div className={`reportees-container ${view}`}>
           {loading ? (
-            <div>Loading...</div> // Show loading state while fetching data
+            <div>Loading...</div> 
           ) : (
             filteredReportees.map((reportee, index) => (
               <div key={index} className="reportee-card">

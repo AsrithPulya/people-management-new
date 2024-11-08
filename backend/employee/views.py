@@ -209,28 +209,116 @@ class AdminLeaveBalancesView(APIView):
 
 # LEAVE REQUEST VIEWS
 from rest_framework.exceptions import NotFound
+from datetime import datetime
+
+# class ApplyForLeaveView(APIView):
+#     def post(self, request):
+#         try:
+#             employee = request.user.employee  
+#             print("Employee instance:", employee)
+#         except Employee.DoesNotExist:
+#             raise NotFound("The user does not have an associated Employee profile.")
+        
+#         if not request.user.reporting_manager:
+#             return Response({'error': 'Employee does not have an assigned reporting manager.'}, status=status.HTTP_400_BAD_REQUEST)
+
+#         serializer = EmployeeLeaveRequestSerializer(data=request.data)
+        
+#         # Validate the serializer data
+#         if serializer.is_valid():
+#             # Save the leave request with the employee and default status of "Pending"
+#             serializer.save(employee=employee, reporting_manager=request.user.reporting_manager, status_of_leave='Pending')
+#             return Response({'message': 'Leave request submitted successfully.'}, status=status.HTTP_201_CREATED)
+        
+#         # If the serializer is invalid, return the errors
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+from rest_framework.exceptions import ValidationError
+
 class ApplyForLeaveView(APIView):
     def post(self, request):
+        # Extract data from the request
+        employee = request.data.get('employee')
+        leave_type_id = request.data.get('leave_type')
+        start_date = request.data.get('start_date')
+        end_date = request.data.get('end_date')
+        leave_day_type = request.data.get('leave_day_type')
+        reporting_manager = request.data.get('reporting_manager')
+        reason_for_leave = request.data.get('reason_for_leave')
+
+        #Reporting manader id and Employee id is automatically retrieved
+        if not all([employee, leave_type_id, start_date, end_date, reason_for_leave]):
+            return Response({"error": "Missing required fields."}, status=status.HTTP_400_BAD_REQUEST)
+
+        #date strings to date objects
         try:
-            employee = request.user.employee  
-            print("Employee instance:", employee)
-        except Employee.DoesNotExist:
-            raise NotFound("The user does not have an associated Employee profile.")
-        
-        if not request.user.reporting_manager:
-            return Response({'error': 'Employee does not have an assigned reporting manager.'}, status=status.HTTP_400_BAD_REQUEST)
+            start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+        except ValueError:
+            return Response({"error": "Invalid date format. Use 'YYYY-MM-DD'."}, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = EmployeeLeaveRequestSerializer(data=request.data)
-        
-        # Validate the serializer data
-        if serializer.is_valid():
-            # Save the leave request with the employee and default status of "Pending"
-            serializer.save(employee=employee, reporting_manager=request.user.reporting_manager, status_of_leave='Pending')
-            return Response({'message': 'Leave request submitted successfully.'}, status=status.HTTP_201_CREATED)
-        
-        # If the serializer is invalid, return the errors
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Date verification - if end_date is after start_date
+        if start_date > end_date:
+            return Response({"error": "End date cannot be before start date."}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Retrieve the leave type and related leave policy (Error Handling)
+        try:
+            leave_type = LeaveTypeIndex.objects.get(id=leave_type_id)
+        except LeaveTypeIndex.DoesNotExist:
+            return Response({"error": "Invalid leave type."}, status=status.HTTP_400_BAD_REQUEST)
+
+        leave_policy_type = LeavePolicyTypes.objects.filter(leave_type=leave_type).first()
+        if not leave_policy_type:
+            return Response(
+                {"error": f"No leave policy found for the leave type '{leave_type.leavename}'."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        max_days = leave_policy_type.max_days
+
+        total_days_requested = (end_date - start_date).days + 1  # +1 to include the end date
+
+        # Check if the new request exceeds the max_days allowed
+        if total_days_requested > max_days:
+            return Response(
+                {"error": f"You can only apply for a maximum of {max_days} days for {leave_type.leavename} leave."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Get all existing approved or pending leave requests for the employee and specific leave type
+        existing_leave_requests = EmployeeLeavesRequests.objects.filter(
+            employee_id=employee,
+            leave_type=leave_type,
+            status_of_leave__in=['Approved', 'Pending']
+        )
+
+        # Calculate the total days already requested for the same leave type
+        total_existing_days = sum(
+            (leave_request.end_date - leave_request.start_date).days + 1 for leave_request in existing_leave_requests
+        )
+
+        # Check if the new request plus existing leave days exceed the max_days
+        if total_existing_days + total_days_requested > max_days:
+            return Response(
+                {"error": f"Total leave days for {leave_type.leavename} cannot exceed {max_days} days."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        #Create if all the conditions are satisfied
+        leave_request = EmployeeLeavesRequests.objects.create(
+            employee_id=employee,
+            leave_type=leave_type,
+            start_date=start_date,
+            end_date=end_date,
+            leave_day_type=leave_day_type,
+            reporting_manager_id=reporting_manager,
+            reason_for_leave=reason_for_leave,
+            status_of_leave='Pending'
+        )
+
+        return Response(
+            {"message": "Leave request submitted successfully.", "leave_request_id": leave_request.id},
+            status=status.HTTP_201_CREATED
+        )
 
 # View for Employee to see the leave his specifically
 class EmployeeLeaveRequestsView(APIView):

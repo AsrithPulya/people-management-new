@@ -1,9 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Sidebar from './Sidebar';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import '../LeaveTracker.css';
 
 function LeaveBalance() {
+  const [leaveBalances, setLeaveBalances] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLeaveBalances = async () => {
+      try {
+        const token = localStorage.getItem('accessToken'); // Retrieve token from localStorage
+
+        if (!token) {
+          alert('You are not authorized. Please log in again.');
+          return;
+        }
+
+        const response = await axios.get('http://127.0.0.1:8000/api/employee/leave-balance/', {
+          headers: { Authorization: `Bearer ${token}` }, 
+        });
+        setLeaveBalances(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching leave balances:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchLeaveBalances();
+  }, []);
+
   return (
     <div className="leave-tracker-page">
       {/* Sidebar */}
@@ -28,29 +56,21 @@ function LeaveBalance() {
             <Link to="/leave-tracker/requests" className="sub-nav-link">Leave Requests</Link>
           </div>
 
-          {/* Leave Balance Cards */}
-          <div className="leave-balance-cards">
-            <div className="card">
-              <p className="card-title">Leave Without Pay</p>
-              <p className="card-data">Available: <span>0</span> days</p>
-              <p className="card-data">Booked: <span>0</span> days</p>
+          {/* Loading Indicator */}
+          {loading ? (
+            <p>Loading leave balances...</p>
+          ) : (
+            <div className="leave-balance-cards">
+              {leaveBalances.map((leave, index) => (
+                <div className="card" key={index}>
+                  <p className="card-title">{leave.leave_type}</p>
+                  <p className="card-data">Available: <span>{leave.remaining_balance}</span> days</p>
+                  <p className="card-data">Booked: <span>{leave.total_taken}</span> days</p>
+                  <p className="card-data">Total Allocated: <span>{leave.total_allocated}</span> days</p>
+                </div>
+              ))}
             </div>
-            <div className="card">
-              <p className="card-title">Personal Leave</p>
-              <p className="card-data">Available: <span>2.5</span> days</p>
-              <p className="card-data">Booked: <span>9.5</span> days</p>
-            </div>
-            <div className="card">
-              <p className="card-title">Sick Leave</p>
-              <p className="card-data">Available: <span>2</span> days</p>
-              <p className="card-data">Booked: <span>1</span> day</p>
-            </div>
-            <div className="card">
-              <p className="card-title">Work From Home</p>
-              <p className="card-data">Available: <span>11</span> days</p>
-              <p className="card-data">Booked: <span>10</span> days</p>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

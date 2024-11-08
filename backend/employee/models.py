@@ -94,7 +94,7 @@ class EmployeeLeavesRequests(models.Model):
     start_date = models.DateField(default=date.today)
     end_date = models.DateField(default=date.today)
     leave_day_type = models.CharField(max_length=20, choices=LEAVE_DAY_TYPE, default='Full day')
-    reporting_manager_email = models.EmailField(max_length=254)
+    reporting_manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     reason_for_leave = models.TextField()
     status_of_leave = models.CharField(max_length=10, choices=LEAVE_STATUS, default='Pending')
 

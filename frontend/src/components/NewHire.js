@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import axios from 'axios'; // Import axios
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 function NewHire({ isOpen, onClose }) {
   const [firstName, setFirstName] = useState('');
@@ -7,13 +7,30 @@ function NewHire({ isOpen, onClose }) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [company] = useState('Sample Company1'); 
-  const [role] = useState('Basic'); 
+  const [managerList, setManagerList] = useState([]);
+  const [reportingManager, setReportingManager] = useState(null);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (isOpen) {
+      const token = localStorage.getItem('accessToken');
+
+      // Fetch the list of usernames for reporting manager dropdown
+      axios.get('http://127.0.0.1:8000/accounts/reporting-managers/', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        setManagerList(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching users:", error);
+      });
+    }
+  }, [isOpen]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const token = localStorage.getItem('accessToken');
 
     try {
       const response = await axios.post('http://127.0.0.1:8000/accounts/register/', {
@@ -22,16 +39,19 @@ function NewHire({ isOpen, onClose }) {
         username: username,
         email: email,
         password: password,
-        company: company,
-        role: role,
+        reporting_manager: reportingManager,
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       console.log('User registered successfully:', response.data);
-      onClose(); // Close the modal after successful submission
+      onClose();
     } catch (error) {
       console.error('Error registering user:', error);
     }
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="modal-overlay">
@@ -87,20 +107,19 @@ function NewHire({ isOpen, onClose }) {
             />
           </div>
           <div className="form-group">
-            <label>Company</label>
-            <input 
-              type="text" 
-              value={company} 
-              disabled 
-            />
-          </div>
-          <div className="form-group">
-            <label>Role</label>
-            <input 
-              type="text" 
-              value={role} 
-              disabled 
-            />
+            <label>Reporting Manager</label>
+            <select 
+              value={reportingManager} 
+              onChange={(e) => setReportingManager(e.target.value)} 
+              required
+            >
+              <option value="">Select Manager</option>
+              {managerList.map((manager) => (
+                <option key={manager.id} value={manager.id}>
+                  {manager.username}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="modal-actions">
             <button type="submit" className="submit-btn">Register</button>

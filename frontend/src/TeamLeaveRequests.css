@@ -116,4 +116,53 @@
     padding: 5px;
     margin-left: 5px;
   }
+
+  /* Styles for the approve/reject buttons */
+.approve-btn, .reject-btn {
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  color: white;
+  border: none;
+  margin: 5px;
+  font-size: 14px;
+}
+
+/* Green color for approve button */
+.approve-btn {
+  background-color: #4CAF50;
+  border: 1px solid #45a049;
+}
+
+/* Hover effect for approve button */
+.approve-btn:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
+}
+
+/* Red color for reject button */
+.reject-btn {
+  background-color: #f44336;
+  border: 1px solid #e53935;
+}
+
+/* Hover effect for reject button */
+.reject-btn:hover {
+  background-color: #e53935;
+  transform: scale(1.05);
+}
+
+/* Focus effect for both buttons */
+.approve-btn:focus, .reject-btn:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Active effect for buttons */
+.approve-btn:active, .reject-btn:active {
+  transform: scale(0.98);
+}
+
   

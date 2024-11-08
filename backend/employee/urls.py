@@ -2,13 +2,16 @@
 
 from django.urls import path
 from .views import LeaveTypeCreateView, LeaveTypeListView, LeaveTypeUpdateView, LeaveTypeDeleteView, LeavePolicyCreateView, LeavePolicyListView, LeavePolicyUpdateView, LeavePolicyDeleteView, EmployeeLeaveBalanceView, AdminLeaveBalancesView, ApplyForLeaveView, EmployeeLeaveRequestsView, AdminLeaveRequestsView, ViewLeaveRequestView, UpdateLeaveRequestStatusView
-from .views import CompanyListCreateAPIView, CreateEmployeeView, ApproveRejectLeaveRequest
+from .views import CompanyListCreateAPIView, CreateEmployeeView, ApproveRejectLeaveRequest, EmployeeListView, CurrentEmployeeView, ReporteesLeaveRequestsView, ReporteesListView
 
 urlpatterns = [
     path('companies/', CompanyListCreateAPIView.as_view(), name='company_list_create'),
     ##My-company GET API
 
     path('employees/create/', CreateEmployeeView.as_view(), name='create_employee'),
+    path('employees/', EmployeeListView.as_view(), name='employee_list'),
+    path('employees/me/', CurrentEmployeeView.as_view(), name='current_employee'),
+
     # Leave Type Management
     path('leave-types/', LeaveTypeListView.as_view(), name='list_leave_types'),
     path('leave-types/create/', LeaveTypeCreateView.as_view(), name='create_leave_type'),
@@ -30,6 +33,8 @@ urlpatterns = [
     path('leave-requests/', EmployeeLeaveRequestsView.as_view(), name='employee_leave_requests'),
     path('admin/leave-requests/', AdminLeaveRequestsView.as_view(), name='admin_leave_requests'),
     path('leave-requests/<int:pk>/', ViewLeaveRequestView.as_view(), name='view_leave_request'),
+    path('reportees/', ReporteesListView.as_view(), name='reportees_list'),
+    path('reportees/leave-requests/', ReporteesLeaveRequestsView.as_view(), name='reportees_leave_requests'),
     path('leave-requests/<int:pk>/update-status/', UpdateLeaveRequestStatusView.as_view(), name='update_leave_request_status'),
     path('leave-requests/<int:leave_id>/approve-reject/', ApproveRejectLeaveRequest.as_view(), name='approve_reject_leave_request'),
 ]

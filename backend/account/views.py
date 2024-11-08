@@ -3,10 +3,12 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import User
-from .serializers import UserSerializer  
+from .serializers import UserSerializer, UserSerializerList 
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
+
 
 
 class RegisterUser(APIView):
@@ -36,3 +38,23 @@ class LoginUser(APIView):
             }, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
+class ReportingManagerListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # Filter users with role 'Admin' (you can adjust this to your logic)
+        reporting_managers = User.objects.filter(role=2)  # Adjust this filter based on your role logic
+        serializer = UserSerializerList(reporting_managers, many=True)
+        return Response(serializer.data)
+
+class UserDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id, *args, **kwargs):
+        try:
+            user = User.objects.get(id=user_id)
+            serializer = UserSerializerList(user)
+            return Response(serializer.data)
+        except User.DoesNotExist:
+            return Response({'detail': 'User not found'}, status=404)

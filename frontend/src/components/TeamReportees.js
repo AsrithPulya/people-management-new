@@ -1,16 +1,33 @@
-import React, { useState } from 'react';
-import Sidebar from './Sidebar'; 
-import '../TeamReportees.css'; 
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Sidebar from './Sidebar';
+import '../TeamReportees.css';
 import { Link } from 'react-router-dom';
 
 const TeamReportees = () => {
+  const [reportees, setReportees] = useState([]);
   const [filter, setFilter] = useState('all');
   const [view, setView] = useState('grid');
 
-  const reportees = [
-    { id: 'HRM19', name: 'Nirav Butani', leaveStatus: 'Leave', leaveBooked: 25.0, checkInStatus: '', schedule: '9:00 AM - 6:00 PM' },
-    { id: 'HRM3', name: 'Kunal Kashyap', leaveStatus: 'Leave', leaveBooked: 25.5, checkInStatus: '', schedule: '9:00 AM - 6:00 PM' },
-  ];
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      alert('You are not logged in.');
+      return;
+    }
+
+    // Fetch reportees data
+    axios.get('http://127.0.0.1:8000/api/reportees/', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then(response => {
+      setReportees(response.data);
+    })
+    .catch(error => {
+      console.error('Error fetching reportees:', error);
+      alert('Failed to fetch reportees. Please try again.');
+    });
+  }, []);
 
   const filteredReportees = reportees.filter(reportee => {
     return filter === 'all' || (filter === 'direct' && reportee.checkInStatus === 'Yet to check-in');
@@ -24,7 +41,7 @@ const TeamReportees = () => {
         {/* Top Navigation Bar */}
         <div className="top-nav">
           <div className="nav-links">
-            <Link to="/mydata" className="nav-link">My Data</Link>
+            <Link to="/leave-tracker" className="nav-link">My Data</Link>
             <Link to="/team" className="nav-link active">Team</Link>
           </div>
         </div>
@@ -63,16 +80,13 @@ const TeamReportees = () => {
         <div className={`reportees-container ${view}`}>
           {filteredReportees.map((reportee, index) => (
             <div key={index} className="reportee-card">
-              <div className="profile-pic"></div>
               <div className="reportee-info">
-                <h4>{reportee.id} - {reportee.name}</h4>
-                <p className="status">
-                  {reportee.leaveStatus || reportee.checkInStatus}
-                </p>
-                <p>{reportee.leaveBooked} Leave booked this year</p>
-                <p>General - {reportee.schedule}</p>
+              {/* Work on name */}
+                <h4>{reportee.emp_code} - {reportee.name}</h4> 
+                <p>Date of Birth: {reportee.date_of_birth} </p>
+                <p>Phone Number: {reportee.phone_number} </p>
+                <p>General : 10am - 6pm</p>
               </div>
-              <button className="contact-btn">&#9742;</button>
             </div>
           ))}
         </div>

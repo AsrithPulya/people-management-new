@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation, Link } from "react-router-dom";
 import Sidebar from "./Sidebar";
+import NewHire from "./NewHire";
 import "../dashboard.css";
 import {
   Overview,
@@ -16,8 +17,16 @@ import {
 import { Profile } from "./tabs/subtabs";
 
 function Dashboard() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      navigate("/"); // Redirect to login if no token
+    }
+  }, [navigate]);
 
   const [selectedPrimaryTab, setSelectedPrimaryTab] = useState("myspace");
   const [selectedSubTab, setSelectedSubTab] = useState("overview");
@@ -50,20 +59,22 @@ function Dashboard() {
           <nav>
             <ul className="top-nav-links">
               <li>
-                <div
+                <Link
+                  to="/myspace"
                   className={`tab-link ${selectedPrimaryTab === "myspace" ? "active" : ""}`}
                   onClick={() => handlePrimaryTabChange("myspace")}
                 >
                   My Space
-                </div>
+                </Link>
               </li>
               <li>
-                <div
+                <Link
+                  to="/organization"
                   className={`tab-link ${selectedPrimaryTab === "organization" ? "active" : ""}`}
                   onClick={() => handlePrimaryTabChange("organization")}
                 >
                   Organization
-                </div>
+                </Link>
               </li>
             </ul>
           </nav>
@@ -160,7 +171,7 @@ function Dashboard() {
           <Routes>
             <Route path="myspace/overview" element={<Overview />} />
             <Route path="myspace/dashboard" element={<DashboardContent />} />
-            <Route path="myspace/overview" element={<Profile/>}/>
+            <Route path="myspace/overview" element={<Profile />} />
             <Route path="organization/announcements" element={<Announcements />} />
             <Route path="organization/policies" element={<Policies />} />
             <Route path="organization/employeeTree" element={<EmployeeTree />} />

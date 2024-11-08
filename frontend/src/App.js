@@ -28,6 +28,7 @@ function App() {
           <Route path="/team" element={<TeamReportees />} />
           <Route path="/team/on-leave" element={<TeamOnLeave />} />
           <Route path="/team/leave-requests" element={<TeamLeaveRequests />} />
+          
         </Routes>
       </div>
     </Router>

@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 function Sidebar() {
   return (
     <div className="sidebar">
-      <Link to="/dashboard" className="sidebar-item">
+      <Link to="/Myspace" className="sidebar-item">
          Home
       </Link>
       <Link to="/leave-tracker" className="sidebar-item">

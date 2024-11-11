@@ -26,7 +26,7 @@ function Login() {
       
       if (access_token) {
         localStorage.setItem('accessToken', access_token);
-        navigate('/dashboard');
+        navigate('/Myspace');
       } else {
         setError('Failed to retrieve token. Please check backend response.');
       }

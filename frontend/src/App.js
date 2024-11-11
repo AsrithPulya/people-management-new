@@ -9,6 +9,8 @@ import LeaveRequests from './components/LeaveRequests';
 import TeamReportees from './components/TeamReportees';
 import TeamOnLeave from './components/TeamOnLeave';
 import TeamLeaveRequests from './components/TeamLeaveRequests';
+import Myspace from './components/Myspace';
+import Organization from './components/Organization';
 
 
 function App() {
@@ -21,6 +23,8 @@ function App() {
           
           {/* Main Dashboard Route */}
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/Myspace" element={<Myspace />} />
+          <Route path="/Organization" element={<Organization />} />
           <Route path="/leave-tracker" element={<LeaveTracker />} />
           <Route path="/leave-tracker/summary" element={<LeaveTracker />} />
           <Route path="/leave-tracker/apply-leave" element={<ApplyLeaveModal />} />

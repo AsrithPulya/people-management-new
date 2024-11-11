@@ -4,24 +4,16 @@ import Sidebar from './Sidebar';
 import NewHire from './NewHire';
 import '../dashboard.css';
 
-function Dashboard() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+function Myspace() {
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
-      navigate('/'); // Redirect to login if no token
+      navigate('/'); 
     }
   }, [navigate]);
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
 
   return (
     <div className="dashboard">
@@ -33,22 +25,18 @@ function Dashboard() {
         <header className="top-nav">
           <nav>
             <ul className="top-nav-links">
-              <li><Link to="/myspace">MySpace</Link></li>
+              <li><Link to="/Myspace">MySpace</Link></li>
               <li><Link to="/Organization">Organization</Link></li>
             </ul>
           </nav>
         </header>
 
         <div className="content">
-          <h1>Welcome to the Dashboard</h1>
-          {/* <button className="add-employee-btn" onClick={openModal}>Add Employee</button> */}
+          <h1>This is MySpace</h1>
         </div>
       </div>
-
-      {/* Register User Modal */}
-      {/* <NewHire isOpen={isModalOpen} onClose={closeModal} /> */}
     </div>
   );
 }
 
-export default Dashboard;
+export default Myspace;

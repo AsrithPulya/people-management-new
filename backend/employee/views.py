@@ -210,33 +210,11 @@ class AdminLeaveBalancesView(APIView):
 # LEAVE REQUEST VIEWS
 from rest_framework.exceptions import NotFound
 from datetime import datetime
-
-# class ApplyForLeaveView(APIView):
-#     def post(self, request):
-#         try:
-#             employee = request.user.employee  
-#             print("Employee instance:", employee)
-#         except Employee.DoesNotExist:
-#             raise NotFound("The user does not have an associated Employee profile.")
-        
-#         if not request.user.reporting_manager:
-#             return Response({'error': 'Employee does not have an assigned reporting manager.'}, status=status.HTTP_400_BAD_REQUEST)
-
-#         serializer = EmployeeLeaveRequestSerializer(data=request.data)
-        
-#         # Validate the serializer data
-#         if serializer.is_valid():
-#             # Save the leave request with the employee and default status of "Pending"
-#             serializer.save(employee=employee, reporting_manager=request.user.reporting_manager, status_of_leave='Pending')
-#             return Response({'message': 'Leave request submitted successfully.'}, status=status.HTTP_201_CREATED)
-        
-#         # If the serializer is invalid, return the errors
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 from rest_framework.exceptions import ValidationError
 
 class ApplyForLeaveView(APIView):
     def post(self, request):
-        # Extract data from the request
+        # Extracting data from the request
         employee = request.data.get('employee')
         leave_type_id = request.data.get('leave_type')
         start_date = request.data.get('start_date')
@@ -392,7 +370,6 @@ class ApproveRejectLeaveRequest(APIView):
 
 class ReporteesListView(APIView):
     permission_classes = [IsAuthenticated]
-
     def get(self, request):
         reporting_manager = request.user
         reportees = Employee.objects.filter(user__reporting_manager=reporting_manager)

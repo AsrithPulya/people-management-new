@@ -82,7 +82,7 @@ const TeamReportees = () => {
             <div key={index} className="reportee-card">
               <div className="reportee-info">
               {/* Work on name */}
-                <h4>{reportee.emp_code} - {reportee.name}</h4> 
+                <h4>{reportee.emp_code} - {reportee.Name}</h4> 
                 <p>Date of Birth: {reportee.date_of_birth} </p>
                 <p>Phone Number: {reportee.phone_number} </p>
                 <p>General : 10am - 6pm</p>

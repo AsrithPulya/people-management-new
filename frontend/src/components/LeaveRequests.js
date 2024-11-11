@@ -1,9 +1,28 @@
-import React from 'react';
-import Sidebar from './Sidebar'; 
-import '../LeaveTracker.css'; 
+import React, { useState, useEffect } from 'react';
+import Sidebar from './Sidebar';
+import '../LeaveTracker.css';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 function LeaveRequests() {
+  const [leaveRequests, setLeaveRequests] = useState([]);
+  const token = localStorage.getItem('accessToken'); // Retrieve token from localStorage
+
+  // Fetch leave requests data from the API
+  useEffect(() => {
+    axios.get('http://127.0.0.1:8000/api/leave-requests/', {
+      headers: {
+        'Authorization': `Bearer ${token}`, 
+      }
+    })
+    .then(response => {
+      setLeaveRequests(response.data);
+    })
+    .catch(error => {
+      console.error('There was an error fetching the leave requests!', error);
+    });
+  }, [token]);
+
   return (
     <div className="leave-tracker-page">
       {/* Sidebar */}
@@ -14,7 +33,7 @@ function LeaveRequests() {
         {/* Top Navigation Bar */}
         <div className="top-nav">
           <div className="nav-links">
-            <Link to="/leave-ckertra" className="nav-link active">MyData</Link>
+            <Link to="/leave-tracker" className="nav-link active">My Data</Link>
             <Link to="/team" className="nav-link">Team</Link>
           </div>
         </div>
@@ -29,7 +48,7 @@ function LeaveRequests() {
         {/* Leave Requests Content */}
         <h2>Leave Requests</h2>
         <button className="apply-leave-btn">Add Leave Request</button>
-        
+
         <table className="leave-requests-table">
           <thead>
             <tr>
@@ -39,45 +58,29 @@ function LeaveRequests() {
               <th>Start Date</th>
               <th>End Date</th>
               <th>Status</th>
-              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>John Doe</td>
-              <td>12345</td>
-              <td>Sick Leave</td>
-              <td>2024-01-01</td>
-              <td>2024-01-03</td>
-              <td>
-                <span className="status-icon approved"></span> Approved
-              </td>
-              <td>
-                <button className="edit-btn">Edit</button>
-                <button className="delete-btn">Delete</button>
-              </td>
-            </tr>
-            <tr>
-              <td>Jane Smith</td>
-              <td>67890</td>
-              <td>Personal Leave</td>
-              <td>2024-01-10</td>
-              <td>2024-01-15</td>
-              <td>
-                <span className="status-icon pending"></span> Pending
-              </td>
-              <td>
-                <button className="edit-btn">Edit</button>
-                <button className="delete-btn">Delete</button>
-              </td>
-            </tr>
+            {leaveRequests.map((request) => (
+              <tr key={request.id}>
+                <td>{request.employee ? request.employee.Name : 'N/A'}</td> {/* Render the employee name */}
+                <td>{request.employee ? request.employee.emp_code : 'N/A'}</td> {/* Render emp_code */}
+                <td>{request.leave_type_name}</td>
+                <td>{request.start_date}</td>
+                <td>{request.end_date}</td>
+                <td>
+                  <span className={`status-icon ${request.status_of_leave.toLowerCase()}`}></span>
+                  {request.status_of_leave}
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
 
         {/* Footer Information */}
         <div className="footer-info">
-          <p>Total Leave Requests: <strong>2</strong></p>
-          <p>Last updated: <strong>2024-01-30</strong></p>
+          <p>Total Leave Requests: <strong>{leaveRequests.length}</strong></p>
+          <p>Last updated: <strong>{new Date().toLocaleDateString()}</strong></p>
         </div>
       </div>
     </div>

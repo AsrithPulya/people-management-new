@@ -118,23 +118,41 @@
   }
 
   /* Styles for the approve/reject buttons */
-.approve-btn, .reject-btn {
-  padding: 10px 20px;
+.approve-btn{
+  padding: 5px 20px;
   border-radius: 5px;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  color: white;
+  color: green;
   border: none;
   margin: 5px;
-  font-size: 14px;
+  font-size: 13px;
+  position: absolute;
+  left: 10%;
+  top: 80%;
+}
+
+.reject-btn {
+  padding: 5px 20px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  color: red;
+  border: none;
+  margin: 5px;
+  font-size: 13px;
+  position: absolute;
+  left: 50%;
+  top: 80%;
 }
 
 /* Green color for approve button */
-.approve-btn {
+/* .approve-btn {
   background-color: #4CAF50;
   border: 1px solid #45a049;
-}
+} */
 
 /* Hover effect for approve button */
 .approve-btn:hover {
@@ -143,10 +161,10 @@
 }
 
 /* Red color for reject button */
-.reject-btn {
+/* .reject-btn {
   background-color: #f44336;
   border: 1px solid #e53935;
-}
+} */
 
 /* Hover effect for reject button */
 .reject-btn:hover {
@@ -163,6 +181,18 @@
 /* Active effect for buttons */
 .approve-btn:active, .reject-btn:active {
   transform: scale(0.98);
+}
+
+.reportee-card {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  height: 210px;
 }
 
   

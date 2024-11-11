@@ -34,7 +34,7 @@ class LoginUser(APIView):
             access_token = AccessToken.for_user(user)
             return Response({
                 "message": "Login successful",
-                "access_token": str(access_token)  # Include the token in the response
+                "access_token": str(access_token)  
             }, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
@@ -43,8 +43,7 @@ class ReportingManagerListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Filter users with role 'Admin' (you can adjust this to your logic)
-        reporting_managers = User.objects.filter(role=2)  # Adjust this filter based on your role logic
+        reporting_managers = User.objects.filter(role=3)  
         serializer = UserSerializerList(reporting_managers, many=True)
         return Response(serializer.data)
 

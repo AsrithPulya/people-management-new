@@ -6,6 +6,7 @@ class User(AbstractUser):
     ROLE_CHOICES = [
         (1, 'Admin'),
         (2, 'Basic'),
+        (3, 'Manager'),
     ]
     
     role = models.IntegerField(choices=ROLE_CHOICES, default=2)

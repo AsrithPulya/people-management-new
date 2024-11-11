@@ -81,15 +81,24 @@
   }
   
   .reportee-info h4 {
-    margin: 0;
+    margin: 6px;
     font-size: 16px;
   }
   
-  .reportee-info .status {
+  .reportee-info .status_Rejected {
     color: #dc3545; /* Red for "Yet to check-in" or "Leave" */
     font-weight: bold;
   }
   
+  .reportee-info .status_Approved {
+    color: green; /* Red for "Yet to check-in" or "Leave" */
+    font-weight: bold;
+  }
+
+  .reportee-info .status_Pending {
+    color: yellow; /* Red for "Yet to check-in" or "Leave" */
+    font-weight: bold;
+  }
   .contact-btn {
     background: none;
     border: none;

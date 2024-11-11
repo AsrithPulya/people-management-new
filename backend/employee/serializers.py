@@ -7,11 +7,21 @@ class CompanyMainSerializer(serializers.ModelSerializer):
         model = Company
         fields = ['id', 'company_name', 'company_gstno', 'createdby', 'created_at']
 
+# class EmployeeSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Employee
+#         fields = ['id', 'company', 'emp_code', 'date_of_birth', 'father_name', 'mother_name', 'phone_number', 'adhaar_number', 'user']
 class EmployeeSerializer(serializers.ModelSerializer):
+    Name = serializers.SerializerMethodField() 
     class Meta:
         model = Employee
-        fields = ['id', 'company', 'emp_code', 'date_of_birth', 'father_name', 'mother_name', 'phone_number', 'adhaar_number', 'user']
-        
+        fields = ['id', 'company', 'emp_code', 'date_of_birth', 'father_name', 'mother_name', 'phone_number', 'adhaar_number', 'user', 'Name']
+
+    def get_Name(self, obj):
+        if obj.user:
+            return f"{obj.user.first_name} {obj.user.last_name}"
+        return None 
+          
 class LeaveTypeIndexSerializer(serializers.ModelSerializer):
     class Meta:
         model = LeaveTypeIndex
@@ -27,10 +37,18 @@ class LeavePolicyTypesSerializer(serializers.ModelSerializer):
         model = LeavePolicyTypes
         fields = ['id', 'max_days', 'leave_policy', 'leave_type']
 
+
 class EmployeeLeaveRequestSerializer(serializers.ModelSerializer):
+    employee = EmployeeSerializer()  # Nested EmployeeSerializer to include the Name field
+    leave_type_name = serializers.CharField(source='leave_type.leavename')  
+
     class Meta:
         model = EmployeeLeavesRequests
-        fields = ['id', 'employee', 'leave_type', 'start_date', 'end_date', 'leave_day_type', 'reporting_manager', 'reason_for_leave', 'status_of_leave']
+        fields = [
+            'id', 'employee', 'leave_type', 'leave_type_name', 'start_date', 'end_date', 
+            'leave_day_type', 'reporting_manager', 'reason_for_leave', 'status_of_leave'
+        ]
+
 
     # def create(self, validated_data):
     #     employee = validated_data.get('employee')

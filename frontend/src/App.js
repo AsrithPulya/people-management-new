@@ -11,6 +11,8 @@ import TeamOnLeave from './components/TeamOnLeave';
 import TeamLeaveRequests from './components/TeamLeaveRequests';
 import Myspace from './components/Myspace';
 import Organization from './components/Organization';
+import { Activities } from './components/tabs/subtabs';
+import { Approvals } from './components/tabs/subtabs';
 
 
 function App() {

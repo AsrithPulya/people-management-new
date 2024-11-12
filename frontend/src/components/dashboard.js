@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Sidebar from './Sidebar';
-import NewHire from './NewHire';
+// import NewHire from './NewHire';
 import '../dashboard.css';
 
 function Dashboard() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+ // const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,13 +15,13 @@ function Dashboard() {
     }
   }, [navigate]);
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
+  // const openModal = () => {
+  //   setIsModalOpen(true);
+  // };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+  // const closeModal = () => {
+  //   setIsModalOpen(false);
+  // };
 
   return (
     <div className="dashboard">

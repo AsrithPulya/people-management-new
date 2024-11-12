@@ -149,8 +149,26 @@ ul {
   border-bottom: 2px solid transparent; /* Optional: To add a bottom border */
 }
 
+
+
+.tab {
+  display: flex;
+}
+
+.tab-container {
+  display: flex;
+  flex-direction: row;
+  list-style-type: none;
+  padding: 0;
+}
+
+.tab-container li {
+  margin-right: 1rem;
+}
+
+
 .tab-link.active {
-  color: #007bff; /* Active tab color */
-  font-weight: bold; /* Optional: To make the active tab bold */
-  border-bottom: 2px solid #007bff; /* Optional: To underline the active tab */
+  font-weight: bold;
+  color: #0056b3;
+  border-bottom: 2px solid #0056b3;
 }

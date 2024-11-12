@@ -92,9 +92,9 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'peoplemanagement',
+        'NAME': 'MyDB',
         'USER': 'root',
-        'PASSWORD': 'rootpassword',
+        'PASSWORD': 'harimysql',
         'HOST': 'localhost',  
         'PORT': '3306',       
     }
